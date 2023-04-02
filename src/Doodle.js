@@ -1,4 +1,5 @@
 import CanvasDraw from "react-canvas-draw";
+import React from 'react'
 import './Doodle.css';
 import { useRef } from 'react'
 import { useEffect, useState } from "react";
@@ -105,6 +106,8 @@ export default function Doodle() {
       <img src={greyScaleURL} />
 
     </div>
+    
   )
 }
+
 
