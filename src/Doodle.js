@@ -54,7 +54,7 @@ export default function Doodle() {
             imgData.data[i + 1] = avg;
             imgData.data[i + 2] = avg;
         }
-    }
+      }
 
       ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
       console.log(ctx.getImageData(0, 0, canvas.width, canvas.height))
@@ -68,13 +68,15 @@ export default function Doodle() {
 
     })
 
-    console.log(greyScaleURL)
-    console.log("hit end")
+    const model = await tf.loadLayersModel('../model/model.json')
 
-    const model = await tf.loadLayersModel('model/model.json')
+    console.log("asdasd")
 
     const pred = model.predict(preprocess(imgData)).dataSync()
     console.log(pred)
+
+    console.log(greyScaleURL)
+    console.log("hit end")
 
   }
 
