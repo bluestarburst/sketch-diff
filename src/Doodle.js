@@ -69,7 +69,7 @@ export default function Doodle() {
 
     })
 
-    const model = await tf.loadLayersModel('../model/model.json')
+    const model = await tf.loadLayersModel('/model/model.json')
 
     console.log("asdasd")
 
