@@ -18,7 +18,7 @@ function App() {
       <header className="App-header">
         {/* <img src={logo} className="App-logo" alt="logo" /> */}
         <TitleMake/>
-        <Doodle/>
+        <Doodle brushSize={brushSize}  />
         <UI brushSize={brushSize} setVar={setVar}/>
         { /*  */}
         
