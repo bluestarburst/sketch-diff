@@ -42,6 +42,7 @@ export default function Doodle(props) {
   const getImageData = async () => {
 
     const imgurl = await ref.current.getDataURL()
+    const imgThing = await ref.current.get
     setImgURL(imgurl)
 
     const img = document.createElement('img');
@@ -54,35 +55,44 @@ export default function Doodle(props) {
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
 
-      //define width and height of image
-      canvas.width = 28
-      canvas.height = 28
+      canvas.width = img.width
+      canvas.height = img.height
 
-      ctx.drawImage(img, 0, 0, 28, 28) //draws image of dimensions 28 * 28
+      ctx.drawImage(img, 0, 0, img.width, img.height)
 
       imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-      console.log(imgData)
+      //define width and height of image
+      // canvas.width = 28
+      // canvas.height = 28
 
-      for (var y = 0; y < canvas.height; y++) {
-        for (var x = 0; x < canvas.width; x++) {
-          var i = (y * 4) * canvas.width + x * 4;
-          var avg = (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
+      // ctx.drawImage(img, 0, 0, 28, 28) //draws image of dimensions 28 * 28
+
+      // imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      // console.log(imgData)
+
+      // for (var y = 0; y < canvas.height; y++) {
+      //   for (var x = 0; x < canvas.width; x++) {
+      //     var i = (y * 4) * canvas.width + x * 4;
+      //     var avg = (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
           
-          imgData.data[i] = avg;
-          imgData.data[i + 1] = avg;
-          imgData.data[i + 2] = avg;
-        }
-      }
+      //     imgData.data[i] = avg;
+      //     imgData.data[i + 1] = avg;
+      //     imgData.data[i + 2] = avg;
+      //   }
+      // }
 
-      ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
-      console.log(ctx.getImageData(0, 0, canvas.width, canvas.height))
+      // ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
+      // console.log(ctx.getImageData(0, 0, canvas.width, canvas.height))
 
-      const url = canvas.toDataURL(0, 0, canvas.width, canvas.height)
+      // const url = canvas.toDataURL(0, 0, canvas.width, canvas.height)
 
-      setGreyScaleURL(url) // here
+      // setGreyScaleURL(url) // here
 
-      console.log(imgData)
+      // console.log(imgData)
+
+
       const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
       console.log(pred)
       
@@ -112,15 +122,21 @@ export default function Doodle(props) {
     return tf.tidy(() => {
       console.log("preprocess")
       console.log(imgData);
+
       //convert the image data to a tensor 
       let tensor = tf.browser.fromPixels(imgData, 1)
       //resize to 28 x 28 
       const resized = tf.image.resizeBilinear(tensor, [28, 28]).toFloat()
+      console.log(resized)
       // Normalize the image 
       const offset = tf.scalar(255.0);
+      console.log(offset)
       const normalized = tf.scalar(1.0).sub(resized.div(offset));
+      console.log(normalized)
       //We add a dimension to get a batch shape 
+      
       const batched = normalized.expandDims(0)
+      console.log(batched)
       return batched
     })
   }
