@@ -46,7 +46,7 @@ export default function Doodle(props) {
   const getImageData = async () => {
 
     const imgurl = await ref.current.getDataURL()
-    const imgThing = await ref.current.get
+    // const imgThing = await ref.current.get
     setImgURL(imgurl)
 
     const img = document.createElement('img');
@@ -55,7 +55,7 @@ export default function Doodle(props) {
     var imgData
 
     img.addEventListener('load', async () => {
-      model = await tf.loadLayersModel("model/model.json")
+      // model = await tf.loadLayersModel("model/model.json")
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
 
@@ -63,6 +63,13 @@ export default function Doodle(props) {
       canvas.height = img.height
 
       ctx.drawImage(img, 0, 0, img.width, img.height)
+
+      document.body.appendChild(canvas)
+
+      const dpi = window.devicePixelRatio
+      // const imgData = canvas.contextContainer.getImageData(0, 0, canvas.width, canvas.height);
+
+      
 
       imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -97,27 +104,27 @@ export default function Doodle(props) {
       // console.log(imgData)
 
 
-      const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
-      console.log(pred)
+      // const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
+      // console.log(pred)
       
-      let max = 0.0
-      let maxIdx = 0
+      // let max = 0.0
+      // let maxIdx = 0
 
-      for (let i = 0; i < pred.length; i++){
-        if (pred[i]  > max){
-          max = pred[i]
-          maxIdx = i
-        }
-      }
+      // for (let i = 0; i < pred.length; i++){
+      //   if (pred[i]  > max){
+      //     max = pred[i]
+      //     maxIdx = i
+      //   }
+      // }
       
       
-      console.log(classList[maxIdx])
-      canvas.remove()
-      img.remove()
+      // console.log(classList[maxIdx])
+      // // canvas.remove()
+      // // img.remove()
 
     })
 
-    console.log(greyScaleURL)
+    // console.log(greyScaleURL)
     console.log("hit end")
 
   }
@@ -149,9 +156,11 @@ export default function Doodle(props) {
   return (
     <div className="canvas">
       <CanvasDraw brushColor="#600" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"}} />
-      <button className= "clear" onClick={clearCanvas}>Clear</button>
-      <button className= "undo" onClick={undoCanvas}>Undo</button>
-      <button className="" onClick={getImageData}>Click</button>
+      <button className= "clear bg-purple-600" onClick={clearCanvas}>Clear</button>
+      &nbsp;&nbsp;&nbsp;
+      <button className= "undo bg-purple-600" onClick={undoCanvas}>Undo</button>
+      &nbsp;&nbsp;&nbsp;
+      <button className="bg-purple-600" onClick={getImageData}>Click</button>
       <img src={imgUrl} />
       <img src={greyScaleURL} />
     </div>
