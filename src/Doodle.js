@@ -14,10 +14,10 @@ import { classes } from "./classes";
 
 
 export default function Doodle(props) {
-  function clearCanvas(){
+  function clearCanvas() {
     ref.current.eraseAll()
   }
-  function undoCanvas(){
+  function undoCanvas() {
     ref.current.undo()
   }
 
@@ -55,7 +55,7 @@ export default function Doodle(props) {
     var imgData
 
     img.addEventListener('load', async () => {
-      // model = await tf.loadLayersModel("model/model.json")
+      model = await tf.loadLayersModel("model/model.json")
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
 
@@ -69,9 +69,26 @@ export default function Doodle(props) {
       const dpi = window.devicePixelRatio
       // const imgData = canvas.contextContainer.getImageData(0, 0, canvas.width, canvas.height);
 
-      
+      canvas.addEventListener('onmousemove', (e) => {
+        imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
+        console.log(pred)
 
-      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        let max = 0.0
+        let maxIdx = 0
+
+        for (let i = 0; i < pred.length; i++) {
+          if (pred[i] > max) {
+            max = pred[i]
+            maxIdx = i
+          }
+        }
+
+
+        console.log(classList[maxIdx])
+      })
+
+
 
       //define width and height of image
       // canvas.width = 28
@@ -87,7 +104,7 @@ export default function Doodle(props) {
       //   for (var x = 0; x < canvas.width; x++) {
       //     var i = (y * 4) * canvas.width + x * 4;
       //     var avg = (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
-          
+
       //     imgData.data[i] = avg;
       //     imgData.data[i + 1] = avg;
       //     imgData.data[i + 2] = avg;
@@ -104,21 +121,7 @@ export default function Doodle(props) {
       // console.log(imgData)
 
 
-      // const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
-      // console.log(pred)
-      
-      // let max = 0.0
-      // let maxIdx = 0
 
-      // for (let i = 0; i < pred.length; i++){
-      //   if (pred[i]  > max){
-      //     max = pred[i]
-      //     maxIdx = i
-      //   }
-      // }
-      
-      
-      // console.log(classList[maxIdx])
       // // canvas.remove()
       // // img.remove()
 
@@ -145,7 +148,8 @@ export default function Doodle(props) {
       const normalized = tf.scalar(1.0).sub(resized.div(offset));
       console.log(normalized)
       //We add a dimension to get a batch shape 
-      
+      const imgArr = tf.browser.toPixels(tensor)
+      console.log(imgArr)
       const batched = normalized.expandDims(0)
       console.log(batched)
       return batched
@@ -155,10 +159,10 @@ export default function Doodle(props) {
 
   return (
     <div className="canvas">
-      <CanvasDraw brushColor="#600" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"}} />
-      <button className= "clear bg-purple-600" onClick={clearCanvas}>Clear</button>
+      <CanvasDraw brushColor="#600" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
+      <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button>
       &nbsp;&nbsp;&nbsp;
-      <button className= "undo bg-purple-600" onClick={undoCanvas}>Undo</button>
+      <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button>
       &nbsp;&nbsp;&nbsp;
       <button className="bg-purple-600" onClick={getImageData}>Click</button>
       <img src={imgUrl} />
