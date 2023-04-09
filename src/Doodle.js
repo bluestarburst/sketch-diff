@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Title from "./Title"
 // import modelJSON from "./model/model.json"
 import * as tf from '@tensorflow/tfjs';
+import { classes } from "./classes";
 
 // ok nvm it has to be in an asycn function
 
@@ -18,6 +19,8 @@ export default function Doodle(props) {
 
   const [imgUrl, setImgURL] = useState("")
   const [greyScaleURL, setGreyScaleURL] = useState("")
+  const [classList, setClassList] = useState(classes.split(' ', 100))
+
 
   async function loadModel() {
     model = await tf.loadLayersModel("model/model.json")
@@ -65,6 +68,7 @@ export default function Doodle(props) {
         for (var x = 0; x < canvas.width; x++) {
           var i = (y * 4) * canvas.width + x * 4;
           var avg = (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
+          
           imgData.data[i] = avg;
           imgData.data[i + 1] = avg;
           imgData.data[i + 2] = avg;
@@ -80,8 +84,20 @@ export default function Doodle(props) {
 
       console.log(imgData)
       const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
-      console.log(pred) 
+      console.log(pred)
+      
+      let max = 0.0
+      let maxIdx = 0
 
+      for (let i = 0; i < pred.length; i++){
+        if (pred[i]  > max){
+          max = pred[i]
+          maxIdx = i
+        }
+      }
+      
+      
+      console.log(classList[maxIdx])
       canvas.remove()
       img.remove()
 
