@@ -7,7 +7,7 @@ function UI(props) {
 
     return (
         <div className="UI">
-            <button className="brush-size bg-red-700" onClick={() => {size(2)}}>Size 1</button>
+            <button className="brush-size bg-red-900" onClick={() => {size(2)}}>Size 1</button>
             &nbsp;&nbsp;&nbsp;
             <button className="brush-size bg-orange-700" onClick={() => {size(5)}}>Size 2</button>
             &nbsp;&nbsp;&nbsp;

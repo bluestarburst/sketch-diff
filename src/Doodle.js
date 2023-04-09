@@ -14,6 +14,12 @@ import { classes } from "./classes";
 
 
 export default function Doodle(props) {
+  function clearCanvas(){
+    ref.current.eraseAll()
+  }
+  function undoCanvas(){
+    ref.current.undo()
+  }
 
   var model
 
@@ -33,8 +39,6 @@ export default function Doodle(props) {
   useEffect(() => {
     document.title = "Team Name";
   }, [imgUrl, greyScaleURL]);
-
-
 
 
   const ref = useRef(null)
@@ -144,13 +148,15 @@ export default function Doodle(props) {
 
   return (
     <div className="canvas">
-      <CanvasDraw brushColor="#600" ref={ref} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }}
-        brushRadius={props.brushSize} />
+      <CanvasDraw brushColor="#600" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"}} />
+      <button className= "clear" onClick={clearCanvas}>Clear</button>
+      <button className= "undo" onClick={undoCanvas}>Undo</button>
       <button className="" onClick={getImageData}>Click</button>
       <img src={imgUrl} />
       <img src={greyScaleURL} />
     </div>
   )
 }
+
 
 
