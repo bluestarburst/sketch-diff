@@ -1,4 +1,3 @@
-import CanvasDraw from "react-canvas-draw";
 import React from 'react'
 import './Doodle.css';
 import { useRef } from 'react'
@@ -6,7 +5,8 @@ import { useEffect, useState } from "react";
 import Title from "./Title"
 // import modelJSON from "./model/model.json"
 import * as tf from '@tensorflow/tfjs';
-import { classes } from "./classes";
+import { classes } from "./classes2";
+import { fabric } from './fabric.js';
 
 // import test from "./envelope.png"
 
@@ -14,207 +14,249 @@ import { classes } from "./classes";
 
 // hehe oops
 
+var model;
+var classNames = classes.split(' ');
+var coords = [];
+var mousePressed = false;
+var mode;
+
 
 export default function Doodle(props) {
-  function clearCanvas() {
-    ref.current.eraseAll()
-  }
-  function undoCanvas() {
-    ref.current.undo()
-  }
 
-  const [model, setModel] = useState(null)
+    const [canvas, setCanvas] = useState(null)
 
-  const [imgUrl, setImgURL] = useState("")
-  const [greyScaleURL, setGreyScaleURL] = useState("")
-  const [classList, setClassList] = useState(classes.split(' ', 100))
+    async function loadModel() {
+        model = await tf.loadLayersModel('model2/model.json')
 
+        //warm up 
+        model.predict(tf.zeros([1, 28, 28, 1]))
 
-  async function loadModel() {
-    var models = await tf.loadLayersModel("model/model.json")
-    console.log("LOADED MODEL")
-    setModel(models)
-    
-  }
-
-  useEffect(() => {
-    loadModel() // noice
-  }, [])
-
-  useEffect(() => {
-    document.title = "Team Name";
-  }, [imgUrl, greyScaleURL]);
-
-
-  const ref = useRef(null)
-
-  const getImageData = async () => {
-
-    const imgurl = await ref.current.getDataURL()
-
-    // preprocess(imgurl)
-    
-    // predictImage(document.getElementById("canv").children[0].children[1])
-    // predictImage(document.getElementById("test"))
-    // return;
-    // const imgThing = await ref.current.get
-    setImgURL(imgurl)
-    // predictImage(document.getElementById("canv").children[0].children[1]);
-    // return
-
-    const img = document.createElement('img');
-    img.src = imgurl
-
-    var imgData
-
-    img.addEventListener('load', async () => {
-
-      const canvas = document.createElement("canvas")
-      const ctx = canvas.getContext("2d")
-
-      canvas.width = img.width
-      canvas.height = img.height
-
-      ctx.drawImage(img, 0, 0, img.width, img.height)
-
-      document.body.appendChild(canvas)
-
-      const dpi = window.devicePixelRatio
-      // const imgData = canvas.contextContainer.getImageData(0, 0, canvas.width, canvas.height);
-
-
-      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      var minX = 1000000
-      var minY = 1000000
-      var maxX = 0
-      var maxY = 0
-
-      for (var y = 0; y < canvas.height; y++) {
-        for (var x = 0; x < canvas.width; x++) {
-          var i = (y * 4) * canvas.width + x * 4;
-          var avg = 255 - (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
-
-          imgData.data[i] = avg;
-          imgData.data[i + 1] = avg;
-          imgData.data[i + 2] = avg;
-          if (avg != 0) {
-            if (x < minX) {
-              minX = x
-            }
-            if (x > maxX) {
-              maxX = x
-            }
-            if (y < minY) {
-              minY = y
-            }
-            if (y > maxY) {
-              maxY = y
-            }
-          }
-        }
-      }
-
-      console.log(minX, minY, maxX, maxY)
-
-      ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
-
-      imgData = ctx.getImageData(minX * dpi, minY * dpi, (maxX - minX) * dpi, (maxY - minY) * dpi)
-
-
-      predictImage(imgData)
-
-
-
-      //define width and height of image
-      // canvas.width = 28
-      // canvas.height = 28
-
-      // ctx.drawImage(img, 0, 0, 28, 28) //draws image of dimensions 28 * 28
-
-      // imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      // console.log(imgData)
-
-
-
-      // ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
-      // console.log(ctx.getImageData(0, 0, canvas.width, canvas.height))
-
-      // const url = canvas.toDataURL(0, 0, canvas.width, canvas.height)
-
-      // setGreyScaleURL(url) // here
-
-      // console.log(imgData)
-
-
-
-      // // canvas.remove()
-      // // img.remove()
-
-    })
-
-    // console.log(greyScaleURL)
-    console.log("hit end")
-
-  }
-
-  function predictImage(imgData) {
-    const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
-    console.log(pred)
-
-    let max = -100
-    let maxIdx = 0
-
-    for (let i = 0; i < pred.length; i++) {
-      if (pred[i] > max) {
-        max = pred[i]
-        maxIdx = i
-      }
+        //allow drawing on the canvas 
+        
     }
 
+    useEffect(() => {
+        loadModel()
+    }, [])
 
-    console.log(classList[maxIdx])
-  }
+    /*
+get the best bounding box by trimming around the drawing
+*/
+    function getMinBox() {
+        //get coordinates 
+        var coorX = coords.map(function (p) {
+            return p.x
+        });
+        var coorY = coords.map(function (p) {
+            return p.y
+        });
+
+        //find top left and bottom right corners 
+        var min_coords = {
+            x: Math.min.apply(null, coorX),
+            y: Math.min.apply(null, coorY)
+        }
+        var max_coords = {
+            x: Math.max.apply(null, coorX),
+            y: Math.max.apply(null, coorY)
+        }
+
+        //return as strucut 
+        return {
+            min: min_coords,
+            max: max_coords
+        }
+    }
+
+    /*
+    get the current image data 
+    */
+    function getImageData() {
+        //get the minimum bounding box around the drawing 
+        const mbb = getMinBox()
+
+        //get image data according to dpi 
+        const dpi = window.devicePixelRatio
+        const imgData = canvas.contextContainer.getImageData(mbb.min.x * dpi, mbb.min.y * dpi,
+            (mbb.max.x - mbb.min.x) * dpi, (mbb.max.y - mbb.min.y) * dpi);
+        return imgData
+    }
+
+    /*
+    get the prediction 
+    */
+    function getFrame() {
+        //make sure we have at least two recorded coordinates 
+        if (coords.length >= 2) {
+
+            //get the image data from the canvas 
+            const imgData = getImageData()
+
+            //get the prediction 
+            const pred = model.predict(preprocess(imgData)).dataSync()
+
+            //find the top 5 predictions 
+            const indices = findIndicesOfMax(pred, 5)
+            const probs = findTopValues(pred, 5)
+            const names = getClassNames(indices)
+
+            console.log(names)
+
+            //set the table 
+            // setTable(names, probs)
+        }
+
+    }
+
+    /*
+    get the the class names 
+    */
+    function getClassNames(indices) {
+        var outp = []
+        for (var i = 0; i < indices.length; i++)
+            outp[i] = classNames[indices[i]]
+        return outp
+    }
+
+    /*
+    load the class names 
+    */
+    // async function loadDict() {
+    //     if (mode == 'ar')
+    //         loc = 'model2/class_names_ar.txt'
+    //     else
+    //         loc = 'model2/class_names.txt'
+
+    //     await $.ajax({
+    //         url: loc,
+    //         dataType: 'text',
+    //     }).done(success);
+    // }
+
+    /*
+    load the class names
+    */
+    function success(data) {
+        const lst = data.split(/\n/)
+        for (var i = 0; i < lst.length - 1; i++) {
+            let symbol = lst[i]
+            classNames[i] = symbol
+        }
+    }
+
+    /*
+    get indices of the top probs
+    */
+    function findIndicesOfMax(inp, count) {
+        var outp = [];
+        for (var i = 0; i < inp.length; i++) {
+            outp.push(i); // add index to output array
+            if (outp.length > count) {
+                outp.sort(function (a, b) {
+                    return inp[b] - inp[a];
+                }); // descending sort the output array
+                outp.pop(); // remove the last index (index of smallest element in output array)
+            }
+        }
+        return outp;
+    }
+
+    /*
+    find the top 5 predictions
+    */
+    function findTopValues(inp, count) {
+        var outp = [];
+        let indices = findIndicesOfMax(inp, count)
+        // show 5 greatest scores
+        for (var i = 0; i < indices.length; i++)
+            outp[i] = inp[indices[i]]
+        
+        console.log(outp)
+        return outp
+    }
+
+    /*
+    preprocess the data
+    */
+    function preprocess(imgData) {
+        return tf.tidy(() => {
+            //convert to a tensor 
+            let tensor = tf.browser.fromPixels(imgData, 1)
+
+            //resize 
+            const resized = tf.image.resizeBilinear(tensor, [28, 28]).toFloat()
+
+            //normalize 
+            const offset = tf.scalar(255.0);
+            const normalized = tf.scalar(1.0).sub(resized.div(offset));
+
+            //We add a dimension to get a batch shape 
+            const batched = normalized.expandDims(0)
+            return batched
+        })
+    }
+
+    /*
+    load the model
+    */
+
+    /*
+    allow drawing on canvas
+    */
 
 
-  function preprocess(imgData) {
-    return tf.tidy(() => {
-      //convert to a tensor 
-      let tensor = tf.browser.fromPixels(imgData, 1)
+    /*
+    clear the canvs 
+    */
+    function erase() {
+        canvas.clear();
+        canvas.backgroundColor = '#ffffff';
+        coords = [];
+    }
 
-      //resize 
-      const resized = tf.image.resizeBilinear(tensor, [28, 28]).toFloat()
+    const initCanvas = () => (
+        new fabric.Canvas('canvas', {
+            height: 300,
+            width: 300,
+            backgroundColor: '#ffffff',
+            isDrawingMode: 1,
+            freeDrawingBrush: {
+                color: "black",
+                width: 20
+            }
+        })
+    );
 
-      //normalize 
-      const offset = tf.scalar(255.0);
-      const normalized = tf.scalar(1.0).sub(resized.div(offset));
+    function recordCoor(event) {
+        var pointer = canvas.getPointer(event.e);
+        var posX = pointer.x;
+        var posY = pointer.y;
 
-      tf.browser.toPixels(normalized, document.getElementById("test"))
+        if (posX >= 0 && posY >= 0 && mousePressed) {
+            coords.push(pointer)
+        }
+    }
 
-      //We add a dimension to get a batch shape 
-      const batched = normalized.expandDims(0)
-      return batched
-    })
-  }
+    useEffect(() => {
+        setCanvas(initCanvas());
+    }, []);
 
+    useEffect(() => {
+        if (canvas) {
+            canvas.on('mouse:up', function (e) {
+                getFrame();
+                mousePressed = false
+            });
+            canvas.on('mouse:down', function (e) {
+                mousePressed = true
+            });
+            canvas.on('mouse:move', function (e) {
+                recordCoor(e)
+            });
+        }
+    }, [canvas]);
 
-
-
-  return (
-    <div className="canvas" id="canv">
-      <CanvasDraw brushColor="#000000" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
-      <canvas id="test" />
-      <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button>
-      &nbsp;&nbsp;&nbsp;
-      <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button>
-      &nbsp;&nbsp;&nbsp;
-      <button className="bg-purple-600" onClick={getImageData}>Click</button>
-      <img src={imgUrl} />
-      <img src={greyScaleURL} />
-    </div>
-  )
+    return (<div>
+        <canvas id="canvas" />
+    </div>)
 }
-
-
-
