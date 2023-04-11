@@ -22,8 +22,8 @@
   "scripts": {
     "start": "react-scripts start",
     "docs": "webpack --mode development --config ./webpack.docs.config.cjs --watch",
-    "server": "http-server ./build -p 8080",
-    "server2": "http-server ./docs -p 8081",
+    "build-server": "http-server ./build -p 8080",
+    "docs-server": "http-server ./docs -p 8081",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
