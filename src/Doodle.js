@@ -8,6 +8,8 @@ import Title from "./Title"
 import * as tf from '@tensorflow/tfjs';
 import { classes } from "./classes";
 
+// import test from "./envelope.png"
+
 // ok nvm it has to be in an asycn function
 
 // hehe oops
@@ -21,7 +23,7 @@ export default function Doodle(props) {
     ref.current.undo()
   }
 
-  var model
+  const [model, setModel] = useState(null)
 
   const [imgUrl, setImgURL] = useState("")
   const [greyScaleURL, setGreyScaleURL] = useState("")
@@ -29,7 +31,10 @@ export default function Doodle(props) {
 
 
   async function loadModel() {
-    model = await tf.loadLayersModel("model/model.json")
+    var models = await tf.loadLayersModel("model/model.json")
+    console.log("LOADED MODEL")
+    setModel(models)
+    
   }
 
   useEffect(() => {
@@ -46,8 +51,16 @@ export default function Doodle(props) {
   const getImageData = async () => {
 
     const imgurl = await ref.current.getDataURL()
+
+    // preprocess(imgurl)
+    
+    // predictImage(document.getElementById("canv").children[0].children[1])
+    // predictImage(document.getElementById("test"))
+    // return;
     // const imgThing = await ref.current.get
     setImgURL(imgurl)
+    // predictImage(document.getElementById("canv").children[0].children[1]);
+    // return
 
     const img = document.createElement('img');
     img.src = imgurl
@@ -55,7 +68,7 @@ export default function Doodle(props) {
     var imgData
 
     img.addEventListener('load', async () => {
-      model = await tf.loadLayersModel("model/model.json")
+
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
 
@@ -69,24 +82,47 @@ export default function Doodle(props) {
       const dpi = window.devicePixelRatio
       // const imgData = canvas.contextContainer.getImageData(0, 0, canvas.width, canvas.height);
 
-      canvas.addEventListener('onmousemove', (e) => {
-        imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
-        console.log(pred)
 
-        let max = 0.0
-        let maxIdx = 0
+      imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < pred.length; i++) {
-          if (pred[i] > max) {
-            max = pred[i]
-            maxIdx = i
+      var minX = 1000000
+      var minY = 1000000
+      var maxX = 0
+      var maxY = 0
+
+      for (var y = 0; y < canvas.height; y++) {
+        for (var x = 0; x < canvas.width; x++) {
+          var i = (y * 4) * canvas.width + x * 4;
+          var avg = 255 - (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
+
+          imgData.data[i] = avg;
+          imgData.data[i + 1] = avg;
+          imgData.data[i + 2] = avg;
+          if (avg != 0) {
+            if (x < minX) {
+              minX = x
+            }
+            if (x > maxX) {
+              maxX = x
+            }
+            if (y < minY) {
+              minY = y
+            }
+            if (y > maxY) {
+              maxY = y
+            }
           }
         }
+      }
+
+      console.log(minX, minY, maxX, maxY)
+
+      ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
+
+      imgData = ctx.getImageData(minX * dpi, minY * dpi, (maxX - minX) * dpi, (maxY - minY) * dpi)
 
 
-        console.log(classList[maxIdx])
-      })
+      predictImage(imgData)
 
 
 
@@ -100,16 +136,7 @@ export default function Doodle(props) {
 
       // console.log(imgData)
 
-      // for (var y = 0; y < canvas.height; y++) {
-      //   for (var x = 0; x < canvas.width; x++) {
-      //     var i = (y * 4) * canvas.width + x * 4;
-      //     var avg = (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
 
-      //     imgData.data[i] = avg;
-      //     imgData.data[i + 1] = avg;
-      //     imgData.data[i + 2] = avg;
-      //   }
-      // }
 
       // ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
       // console.log(ctx.getImageData(0, 0, canvas.width, canvas.height))
@@ -132,34 +159,52 @@ export default function Doodle(props) {
 
   }
 
+  function predictImage(imgData) {
+    const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
+    console.log(pred)
+
+    let max = -100
+    let maxIdx = 0
+
+    for (let i = 0; i < pred.length; i++) {
+      if (pred[i] > max) {
+        max = pred[i]
+        maxIdx = i
+      }
+    }
+
+
+    console.log(classList[maxIdx])
+  }
+
+
   function preprocess(imgData) {
     return tf.tidy(() => {
-      console.log("preprocess")
-      console.log(imgData);
-
-      //convert the image data to a tensor 
+      //convert to a tensor 
       let tensor = tf.browser.fromPixels(imgData, 1)
-      //resize to 28 x 28 
+
+      //resize 
       const resized = tf.image.resizeBilinear(tensor, [28, 28]).toFloat()
-      console.log(resized)
-      // Normalize the image 
+
+      //normalize 
       const offset = tf.scalar(255.0);
-      console.log(offset)
       const normalized = tf.scalar(1.0).sub(resized.div(offset));
-      console.log(normalized)
+
+      tf.browser.toPixels(normalized, document.getElementById("test"))
+
       //We add a dimension to get a batch shape 
-      const imgArr = tf.browser.toPixels(tensor)
-      console.log(imgArr)
       const batched = normalized.expandDims(0)
-      console.log(batched)
       return batched
     })
   }
 
 
+
+
   return (
-    <div className="canvas">
-      <CanvasDraw brushColor="#600" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
+    <div className="canvas" id="canv">
+      <CanvasDraw brushColor="#000000" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
+      <canvas id="test" />
       <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button>
       &nbsp;&nbsp;&nbsp;
       <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button>

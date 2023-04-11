@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 function createCopy(pathW = '') {
     return ({
-        entry: './src/app.js',
+        entry: './src/App.js',
         output: {
             path: path.resolve(__dirname, 'docs/' + pathW),
             filename: 'appBundle.js',
