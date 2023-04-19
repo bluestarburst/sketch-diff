@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 
-function size() {
-    alert('Size changed');
-}
-
 function UI(props) {
-    // const useState =
-    const [brushSize, setVar] = useState(1);
+    function size(newSize) {
+        props.setVar(newSize)
+    }
 
     return (
         <div className="UI">
-            <button className="brush-size" onClick={size}>Change size</button>
+            <button className="brush-size bg-red-600" onClick={() => {size(2)}}>Size 1</button>
+            &nbsp;&nbsp;&nbsp;
+            <button className="brush-size bg-orange-600" onClick={() => {size(5)}}>Size 2</button>
+            &nbsp;&nbsp;&nbsp;
+            <button className="brush-size bg-yellow-600" onClick={() => {size(8)}}>Size 3</button>
+            &nbsp;&nbsp;&nbsp;
+            <button className="brush-size bg-green-600" onClick={() => {size(11)}}>Size 4</button>
+            &nbsp;&nbsp;&nbsp;
+            <button className="brush-size bg-blue-600" onClick={() => {size(14)}}>Size 5</button>
         </div>
     );
 }
