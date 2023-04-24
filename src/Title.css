@@ -3,11 +3,7 @@
     flex-direction: row;
     justify-items: center;
     line-height: 50%;
+    filter: brightness(150%);
 }
-.subtitle{
-    font-family: 'Brush Script MT', cursive;
-    color: #282c34;
-    font-size: 65px;
-    line-height: 10pt;
 
-}
+

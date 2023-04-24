@@ -1,5 +1,72 @@
-/* .parent{
-    position: absolute;
-    background-image: image(back);
-} */
+.canvas_buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    margin: 4px;
+}
+.undo {
+    display: inline-block;
+    padding: 15px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #211138;
+    border: none;
+    border-radius: 15px;
+  }
+  
+  .undo:hover {background-color: #847c94}
+  
+  .undo:active {
+    background-color: #847c94;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
 
+
+  .clear {
+    display: inline-block;
+    padding: 15px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #211138;
+    border: none;
+    border-radius: 15px;
+  }
+  
+  .clear:hover {background-color: #847c94}
+  
+  .clear:active {
+    background-color: #847c94;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
+
+  .clicky{
+    display: inline-block;
+    padding: 15px 10px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #211138;
+    border: none;
+    border-radius: 15px;
+  }
+  
+  .clicky:hover {background-color: #847c94}
+  
+  .clicky:active {
+    background-color: #847c94;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
