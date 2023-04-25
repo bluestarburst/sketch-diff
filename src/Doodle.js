@@ -7,6 +7,7 @@ import Title from "./Title"
 // import modelJSON from "./model/model.json"
 import * as tf from '@tensorflow/tfjs';
 import { classes } from "./classes";
+import { envelopeArr } from "./EnvelopeImgArray2";
 
 // import test from "./envelope.png"
 
@@ -27,11 +28,13 @@ export default function Doodle(props) {
 
   const [imgUrl, setImgURL] = useState("")
   const [greyScaleURL, setGreyScaleURL] = useState("")
-  const [classList, setClassList] = useState(classes.split(' ', 100))
+  // const [classList, setClassList] = useState(classes.split(' ', 100))
+  const [classList, setClassList] = useState(classes)
+  const [predictedLabel, setPredictedLabel] = useState("")
 
 
   async function loadModel() {
-    // var models = await tf.loadLayersModel("model/model.json")
+    
     console.log("LOADED MODEL")
 
     const zeros = tf.zeros([1, 28, 28, 1])
@@ -42,7 +45,7 @@ export default function Doodle(props) {
       method: "POST",
       body: JSON.stringify({
         data:
-          arr
+          envelopeArr
 
       }),
       headers: {
@@ -55,7 +58,8 @@ export default function Doodle(props) {
     })
     console.log(await response.json())
 
-    //setModel(models)
+    // var models = await tf.loadLayersModel("model2/model.json")
+    // setModel(models)
 
   }
 
@@ -179,13 +183,13 @@ export default function Doodle(props) {
 
       imgData = ctx.getImageData(minX * dpi, minY * dpi, (maxX - minX) * dpi, (maxY - minY) * dpi)
 
-      document.body.appendChild(canvas)
+      // document.body.appendChild(canvas)
 
       console.log(imgData)
 
       preprocess(canvas)
 
-      predictImage(imgData)
+      predictImage(canvas)
 
 
 
@@ -225,7 +229,7 @@ export default function Doodle(props) {
   function predictImage(imgData) {
     const pred = model.predict(preprocess(imgData)).dataSync() // we should display the result on the screen
 
-    preprocess()
+    // preprocess()
     console.log(pred)
 
     let max = -100
@@ -311,8 +315,7 @@ export default function Doodle(props) {
 
       console.log(classList[maxIdx])
 
-
-
+      setPredictedLabel(classList[maxIdx])
       
     }
     )
@@ -382,6 +385,8 @@ export default function Doodle(props) {
 
       console.log(classList[maxIdx])
 
+      setPredictedLabel(classList[maxIdx])
+
       return batched
     })
   }
@@ -392,14 +397,20 @@ export default function Doodle(props) {
   return (
     <div className="canvas" id="canv">
       <CanvasDraw brushColor="#000000" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
-      <canvas id="test" />
+      
       <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button>
       &nbsp;&nbsp;&nbsp;
       <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button>
       &nbsp;&nbsp;&nbsp;
       <button className="bg-purple-600" onClick={getImageData}>Click</button>
-      <img src={imgUrl} />
-      <img src={greyScaleURL} />
+      {predictedLabel !== "" && (
+        <p>{"Predicted: " + predictedLabel}</p>
+      )}
+      
+      
+      {/* <canvas id="test" style={{display: "none"}} />
+      <img src={imgUrl} style={{display: "none"}} />
+      <img src={greyScaleURL} style={{display: "none"}} /> */}
     </div>
   )
 }
