@@ -9,6 +9,16 @@ import * as tf from '@tensorflow/tfjs';
 import { classes } from "./classes";
 import { envelopeArr } from "./EnvelopeImgArray2";
 
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch';
+
+import Chart from 'chart.js/auto';
+import { Bar } from "react-chartjs-2";
+
+
+
 // import test from "./envelope.png"
 
 // ok nvm it has to be in an asycn function
@@ -33,6 +43,10 @@ export default function Doodle(props) {
   // const [classList, setClassList] = useState(classes.split(' ', 100))
   const [classList, setClassList] = useState(classes)
   const [predictedLabel, setPredictedLabel] = useState("")
+
+  const [topPredictionValues, setTopPredictionValues] = useState([])
+  const [topPredictionLabels, setTopPredictionLabels] = useState([])
+  const [chartData, setChartData] = useState(undefined)
 
 
   async function loadModel() {
@@ -289,6 +303,10 @@ export default function Doodle(props) {
     console.log(classList[maxIdx])
   }
 
+  const [newPromptWord, setNewPromptWord] = useState("")
+  const [newPrompt, setNewPrompt] = useState("best quality, extremely detailed, symmetric, accurate")
+  const [newNegativePrompt, setNewNegativePrompt] = useState("longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality")
+
   function preprocess(imgData, imgurl) {
     return tf.tidy(async () => {
       //convert to a tensor
@@ -354,22 +372,56 @@ export default function Doodle(props) {
         }
       }
 
+      var topValues = [...data.predictions[0]]
+      var topValues = topValues.sort((a, b) => b - a).slice(0, 5);
+      console.log(data.predictions[0])
+      var topLabels = []
+
+      
+      for (let i = 0; i < 5; i++) {
+        topLabels.push(classList[data.predictions[0].indexOf(topValues[i])]);
+      }
+      console.log(topValues)
+      console.log(topLabels)
+
+      setTopPredictionValues(topValues)
+      setTopPredictionLabels(topLabels)
+
+      const newChartData = {
+        labels: topLabels,
+        datasets: [{
+          label: "confidence level",
+          backgroundColor: "rgb(65,105,225)",
+          borderColor: "rgb(65,105,225)",
+          data: topValues
+        }]
+      }
+
+      setChartData(newChartData)
+
+      console.log(chartData)
+
       console.log(max + " " + maxIdx)
 
       console.log(classList[maxIdx])
-
-      console.log(classList[maxIdx])
+      var tempPrompt = classList[maxIdx]
       setPredictedLabel(classList[maxIdx])
+      if (isOverriding) {
+        // setNewPromptWord(newPromptWord)
+        tempPrompt = newPromptWord
+      }
 
       const imgblob = imgurl.split(',')[1]
 
       console.log("start")
 
       var request = {
-        "inputs": (classList[maxIdx] + ", highres, high quality, best resolution"),
+        "inputs": ("a single " + tempPrompt + ", " + newPrompt),
         "image": imgblob,
-        "negative_prompt": "lowres, bad anatomy, worst quality, low quality, city, traffic",
-        "controlnet_type": "scribble"
+        "negative_prompt": newNegativePrompt,
+        "controlnet_type": "scribble",
+        "guidance_scale": 8,
+        "num_inference_steps": 30,
       }
 
 
@@ -399,6 +451,14 @@ export default function Doodle(props) {
     }
     )
   }
+
+  function onChangeInput(e) {
+    setNewPromptWord(e.target.value);
+  }
+
+
+
+  const [isOverriding, setIsOverriding] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -461,6 +521,8 @@ export default function Doodle(props) {
         }
       }
 
+
+
       console.log(max + " " + maxIdx)
 
 
@@ -475,18 +537,59 @@ export default function Doodle(props) {
 
   return (
     <div className="canvas" id="canv">
-      <CanvasDraw brushColor="#000000" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
-      {isLoading ? <div className="loader">LOADING</div> : null}
-      <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button>
-      &nbsp;&nbsp;&nbsp;
-      <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button>
-      &nbsp;&nbsp;&nbsp;
-      <button className="bg-purple-600" onClick={getImageData}>Click</button>
+      <CanvasDraw brushColor="#000000" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)", width: "600px", height: "600px" }} />
+
+      <div>
+        <Button variant="contained" color="primary" onClick={clearCanvas}>Clear</Button>
+        {/* <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button> */}
+        {/* &nbsp;&nbsp;&nbsp; */}
+        {/* <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button> */}
+        <Button variant="contained" color="primary" onClick={undoCanvas}>Undo</Button>
+        {/* &nbsp;&nbsp;&nbsp; */}
+
+        {/* <button className="bg-purple-600" onClick={getImageData}>Click</button> */}
+        <Button variant="contained" color="primary" onClick={getImageData}>Submit</Button>
+      </div>
+      <br />
+
+      <div>
+        <TextField id="outlined-basic" label="Override Prompt" variant="outlined" disabled={!isOverriding} value={newPromptWord} onChange={onChangeInput} />
+        <Switch label="Override Prediction" onChange={(e) => {
+          setIsOverriding(e.target.checked)
+          console.log(isOverriding)
+        }} />
+      </div>
+
+      <div>
+        <TextField id="outlined-basic" label="Override Prompt" variant="outlined" value={newPrompt} onChange={(e) => {
+          setNewPrompt(e.target.value)
+          console.log(newPrompt)
+        }} />
+        <TextField id="outlined-basic" label="Override Prompt" variant="outlined" value={newNegativePrompt} onChange={(e) => {
+          setNewNegativePrompt(e.target.value)
+          console.log(newNegativePrompt)
+        }}/>
+      </div>
+
       {predictedLabel !== "" && (
-        <p>{"Predicted: " + predictedLabel}</p>
+        <p style={{ color: "black" }}>{"Predicted: " + predictedLabel}</p>
       )}
 
+      {/* {<img src={`https://quickchart.io/chart?c=${{type: 'bar', data: {labels: ${JSON.stringify(labels)}, datasets: ${JSON.stringify(datasets)}}}}`} />} */}
+
+      {chartData && (
+        <Bar data={chartData} options={{ duration: 2000, easing: 'easeOutQuart', scales: { x: { ticks: { font: { weight: 'bold', size: 20}, }, }, y: { ticks: { font: { weight: 'bold', size: 20}, }, }, },}}/>
+      )}
+      
+
+      <div>
+        {isLoading ? <CircularProgress /> : null}
+      </div>
+
       {diffusedImage ? <img src={diffusedImage} /> : null}
+
+      {/* {<Button variant="contained" size="small" color="secondary">test</Button>} */}
+
       {/* <img src={imgUrl} /> */}
 
 
