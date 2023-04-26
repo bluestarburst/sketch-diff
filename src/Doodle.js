@@ -578,7 +578,7 @@ export default function Doodle(props) {
       {/* {<img src={`https://quickchart.io/chart?c=${{type: 'bar', data: {labels: ${JSON.stringify(labels)}, datasets: ${JSON.stringify(datasets)}}}}`} />} */}
 
       {chartData && (
-        <Bar data={chartData} options={{ duration: 2000, easing: 'easeOutQuart', scales: { x: { ticks: { font: { weight: 'bold', size: 20}, }, }, y: { ticks: { font: { weight: 'bold', size: 20}, }, }, },}}/>
+        <Bar data={chartData} options={{ duration: 2000, easing: 'easeOutQuart', scales: { x: { ticks: { font: { weight: 'bold', size: 25}, }, }, y: { ticks: { font: { weight: 'bold', size: 25}, }, }, },}}/>
       )}
       
 
