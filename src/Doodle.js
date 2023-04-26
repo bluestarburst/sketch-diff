@@ -24,6 +24,8 @@ export default function Doodle(props) {
     ref.current.undo()
   }
 
+  const [diffusedImage, setDiffusedImage] = useState(null)
+
   const [model, setModel] = useState(null)
 
   const [imgUrl, setImgURL] = useState("")
@@ -34,7 +36,7 @@ export default function Doodle(props) {
 
 
   async function loadModel() {
-    
+
     console.log("LOADED MODEL")
 
     const zeros = tf.zeros([1, 28, 28, 1])
@@ -76,7 +78,48 @@ export default function Doodle(props) {
 
   const getImageData = async () => {
 
+    if (isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+
     const imgurl = await ref.current.getDataURL()
+
+    // get image uri without data:image/png;base64,
+    // const imgblob = imgurl.split(',')[1]
+
+    // console.log(imgblob)
+
+    // var request = {
+    //   "inputs": ("basketball, highres, high quality, best resolution"),
+    //   "image": imgblob,
+    //   "negative_prompt": "lowres, bad anatomy, worst quality, low quality, city, traffic",
+    //   "controlnet_type": "scribble"
+    // }
+
+    // const responseDiffusion = await fetch("https://dw8hrfe3u0z4cghk.us-east-1.aws.endpoints.huggingface.cloud", {
+    //   method: "POST",
+    //   body: JSON.stringify(request),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "Accept": "image/png",
+    //   }
+    // })
+
+
+    // // read image data from response
+    // const data2 = await responseDiffusion.blob()
+    // console.log("RESULTs")
+    // console.log(data2)
+
+    // // convert image data to URL
+    // const url = URL.createObjectURL(data2)
+    // console.log(url)
+    // setDiffusedImage(url)
+
+
+
 
     // preprocess(imgurl)
 
@@ -108,7 +151,7 @@ export default function Doodle(props) {
 
       ctx.drawImage(img, 0, 0, img.width, img.height)
 
-      
+
 
       const dpi = window.devicePixelRatio
       // const imgData = canvas.contextContainer.getImageData(0, 0, canvas.width, canvas.height);
@@ -123,7 +166,7 @@ export default function Doodle(props) {
 
       console.log(imgData)
 
-      
+
 
 
       // for (var y = 0; y < canvas.height; y++) {
@@ -187,7 +230,7 @@ export default function Doodle(props) {
 
       console.log(imgData)
 
-      preprocess(canvas)
+      preprocess(canvas, imgurl)
 
       predictImage(canvas)
 
@@ -246,7 +289,7 @@ export default function Doodle(props) {
     console.log(classList[maxIdx])
   }
 
-  function preprocess(imgData) {
+  function preprocess(imgData, imgurl) {
     return tf.tidy(async () => {
       //convert to a tensor
       // let tensor = tf.browser.fromPixels(imgData) 
@@ -276,7 +319,7 @@ export default function Doodle(props) {
       console.log(batched.shape)
       const zeros = tf.zeros([1, 28, 28, 1])
       console.log(zeros.shape)
-      
+
 
       var imgArr = await batched.array()
 
@@ -315,12 +358,49 @@ export default function Doodle(props) {
 
       console.log(classList[maxIdx])
 
+      console.log(classList[maxIdx])
       setPredictedLabel(classList[maxIdx])
-      
+
+      const imgblob = imgurl.split(',')[1]
+
+      console.log("start")
+
+      var request = {
+        "inputs": (classList[maxIdx] + ", highres, high quality, best resolution"),
+        "image": imgblob,
+        "negative_prompt": "lowres, bad anatomy, worst quality, low quality, city, traffic",
+        "controlnet_type": "scribble"
+      }
+
+
+      const responseDiffusion = await fetch("https://dw8hrfe3u0z4cghk.us-east-1.aws.endpoints.huggingface.cloud", {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "image/png",
+
+        }
+      })
+
+      // read image data from response
+      const data2 = await responseDiffusion.blob()
+      setIsLoading(false);
+      console.log("RESULTs")
+      console.log(data2)
+
+      // convert image data to URL
+      const url = URL.createObjectURL(data2)
+      console.log(url)
+      setDiffusedImage(url)
+
+      console.log("end")
+
     }
     )
   }
 
+  const [isLoading, setIsLoading] = useState(false);
 
   function preprocess2(imgData) {
     return tf.tidy(async () => {
@@ -383,9 +463,8 @@ export default function Doodle(props) {
 
       console.log(max + " " + maxIdx)
 
-      console.log(classList[maxIdx])
 
-      setPredictedLabel(classList[maxIdx])
+
 
       return batched
     })
@@ -397,7 +476,7 @@ export default function Doodle(props) {
   return (
     <div className="canvas" id="canv">
       <CanvasDraw brushColor="#000000" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)" }} />
-      
+      {isLoading ? <div className="loader">LOADING</div> : null}
       <button className="clear bg-purple-600" onClick={clearCanvas}>Clear</button>
       &nbsp;&nbsp;&nbsp;
       <button className="undo bg-purple-600" onClick={undoCanvas}>Undo</button>
@@ -406,10 +485,13 @@ export default function Doodle(props) {
       {predictedLabel !== "" && (
         <p>{"Predicted: " + predictedLabel}</p>
       )}
-      
-      
+
+      {diffusedImage ? <img src={diffusedImage} /> : null}
+      {/* <img src={imgUrl} /> */}
+
+
       {/* <canvas id="test" style={{display: "none"}} />
-      <img src={imgUrl} style={{display: "none"}} />
+      
       <img src={greyScaleURL} style={{display: "none"}} /> */}
     </div>
   )
