@@ -7,6 +7,7 @@ function createCopy(pathW = '') {
         output: {
             path: path.resolve(__dirname, 'docs/' + pathW),
             filename: 'appBundle.js',
+            publicPath: "./"
         },
         devServer: {
             historyApiFallback: true,
