@@ -215,6 +215,9 @@ export default function Doodle(props) {
         imgData.data[i + 1] = avg;
         imgData.data[i + 2] = avg;
         if (avg != 0) {
+          imgData.data[i] = 255;
+          imgData.data[i + 1] = 255;
+          imgData.data[i + 2] = 255;
           var x = (i / 4) % canvas.width
           var y = Math.floor((i / 4) / canvas.width)
           if (x < minX) {
@@ -377,7 +380,7 @@ export default function Doodle(props) {
       console.log(data.predictions[0])
       var topLabels = []
 
-      
+
       for (let i = 0; i < 5; i++) {
         topLabels.push(classList[data.predictions[0].indexOf(topValues[i])]);
       }
@@ -420,7 +423,7 @@ export default function Doodle(props) {
         "image": imgblob,
         "negative_prompt": newNegativePrompt,
         "controlnet_type": "scribble",
-        "guidance_scale": 8,
+        "guidance_scale": 25,
         "num_inference_steps": 30,
       }
 
@@ -533,7 +536,7 @@ export default function Doodle(props) {
   }
 
   useEffect(() => {
-    console.log("BRUSH COLOR",props.brushColor);
+    console.log("BRUSH COLOR", props.brushColor);
   }, [props.brushColor]);
   return (
     <div className="canvas" id="canv">
@@ -568,7 +571,7 @@ export default function Doodle(props) {
         <TextField id="outlined-basic" label="Override Prompt" variant="outlined" value={newNegativePrompt} onChange={(e) => {
           setNewNegativePrompt(e.target.value)
           console.log(newNegativePrompt)
-        }}/>
+        }} />
       </div>
 
       {predictedLabel !== "" && (
@@ -578,9 +581,9 @@ export default function Doodle(props) {
       {/* {<img src={`https://quickchart.io/chart?c=${{type: 'bar', data: {labels: ${JSON.stringify(labels)}, datasets: ${JSON.stringify(datasets)}}}}`} />} */}
 
       {chartData && (
-        <Bar data={chartData} options={{ duration: 2000, easing: 'easeOutQuart', scales: { x: { ticks: { font: { weight: 'bold', size: 25}, }, }, y: { ticks: { font: { weight: 'bold', size: 25}, }, }, },}}/>
+        <Bar data={chartData} options={{ duration: 2000, easing: 'easeOutQuart', scales: { x: { ticks: { font: { weight: 'bold', size: 25 }, }, }, y: { ticks: { font: { weight: 'bold', size: 25 }, }, }, }, }} />
       )}
-      
+
 
       <div>
         {isLoading ? <CircularProgress /> : null}
@@ -598,8 +601,8 @@ export default function Doodle(props) {
       <img src={greyScaleURL} style={{display: "none"}} /> */}
 
 
-      
-    {/* <div className="canvas">
+
+      {/* <div className="canvas">
       <CanvasDraw brushColor={props.brushColor} ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"}} />
      <div className="canvas_buttons">
           <button className= "undo" onClick={undoCanvas}>Undo</button>
