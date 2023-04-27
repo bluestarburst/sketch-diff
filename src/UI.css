@@ -1,0 +1,36 @@
+.circle_class{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: fixed;
+}
+
+.one_brush{
+    width: 10px;
+    height: 10px;
+    align-self: center;
+}
+
+.two_brush{
+    width: 20px;
+    height: 20px;
+    align-self: center;
+}
+.three_brush{
+    width: 30px;
+    height: 30px;
+    align-self: center;
+}
+.four_brush{
+    width: 40px;
+    height: 40px;
+    align-self: center;
+
+}
+.five_brush{
+    width: 50px;
+    height: 50px;
+    align-self: center;
+
+}
+

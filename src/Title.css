@@ -1,13 +1,28 @@
-.title_image{
+
+.font-loader{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-items: center;
-    line-height: 50%;
-}
-.subtitle{
-    font-family: 'Brush Script MT', cursive;
-    color: #282c34;
-    font-size: 65px;
-    line-height: 10pt;
+    background-color: black;
+    border-radius: 10%;
+    filter: drop-shadow(50%);
 
 }
+
+h1{
+    font-family: 'Rubik Spray Paint';
+    color:white;
+    font-size: 150px;
+    /* line-height: 50%; */
+}
+.sub{
+    font-family: 'Delicious Handrawn';
+    color: white;
+    font-size: 100px;
+    
+    /* line-height: 50%; */
+    
+    
+}
+
+

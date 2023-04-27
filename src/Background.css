@@ -1,4 +1,24 @@
-/* img{
-    width: 8.5in;
-   height: 11in;
-} */
+.Back{
+    background-image: url("noopacitymain.png");
+  background-size:cover;
+  background-repeat: no-repeat;
+  background-image: 100%;
+  background-size:100%;
+  animation: fadeIn 5s;
+  animation-fill-mode:forwards;
+}
+p{
+    color: white;
+}
+
+@keyframes fadeIn {
+    0% { 
+      opacity: 0; 
+  
+    }
+    100% { 
+      opacity: .60; 
+    
+    }
+  
+  }

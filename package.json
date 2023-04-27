@@ -16,9 +16,14 @@
     "react": "^18.2.0",
     "react-canvas-draw": "^1.2.1",
     "react-chartjs-2": "^5.2.0",
+    "react-color": "^2.19.3",
+    "react-color-palette": "^6.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "react-typed": "^1.2.0",
+    "typed": "^10.0.0-beta.2",
     "web-vitals": "^2.1.4",
+    "webfontloader": "^1.6.28",
     "webpack": "^5.78.0"
   },
   "scripts": {
