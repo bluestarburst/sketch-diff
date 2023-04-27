@@ -311,7 +311,7 @@ export default function Doodle(props) {
   }
 
   const [newPromptWord, setNewPromptWord] = useState("")
-  const [newPrompt, setNewPrompt] = useState("best quality, extremely detailed, symmetric, accurate")
+  const [newPrompt, setNewPrompt] = useState("best quality, extremely detailed, accurate")
   const [newNegativePrompt, setNewNegativePrompt] = useState("longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality")
 
   function preprocess(imgData, imgurl) {
@@ -423,7 +423,7 @@ export default function Doodle(props) {
       console.log("start")
 
       var request = {
-        "inputs": ("a single " + tempPrompt + ", " + newPrompt),
+        "inputs": (tempPrompt + ", " + newPrompt),
         "image": imgblob,
         "negative_prompt": newNegativePrompt,
         "controlnet_type": "scribble",
@@ -567,7 +567,7 @@ export default function Doodle(props) {
         }} />
       </div>
 
-      <div>
+      <div className="gap">
         <TextField id="outlined-basic" label="Override Prompt" variant="outlined" value={newPrompt} onChange={(e) => {
           setNewPrompt(e.target.value)
           console.log(newPrompt)
