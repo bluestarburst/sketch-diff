@@ -7,7 +7,7 @@ import UI from './UI';
 import React, { useState } from 'react';
 import { render } from 'react-dom';
 // import pen from './pen.png';
-// import ColorPal from './Color';
+import ColorPal from './Color';
 import { TypeWrite1 } from './TypeWrite';
 import { TypeWrite2 } from './TypeWrite';
 import { TypeWrite3 } from './TypeWrite';
