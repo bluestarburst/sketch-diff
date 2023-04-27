@@ -56,7 +56,7 @@ function App() {
           <UI className="circles" brushSize={brushSize} setVar={setVar} />
 
 
-          <br></br>
+          {/* <br/> */}
 
           <div className="Typed_Stuff">
             <TypeWrite1 />
