@@ -41,8 +41,10 @@ function App() {
           <p>
           </p>
         </div>
-        <div id="TitleStuff">
-          <TitleMake />
+        <div className="backy2">
+          <div id="TitleStuff">
+            <TitleMake />
+          </div>
         </div>
       </header>
 
