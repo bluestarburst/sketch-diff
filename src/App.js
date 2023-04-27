@@ -50,12 +50,14 @@ function App() {
 
       <div className="encap">
         <div className="alignment">
-          <div className="DrawSection">
-            <Doodle brushSize={brushSize} brushColor={brushColor} />
-            <br></br>
-            <Color brushColor={brushColor} setVar={setColor} />
+          <div className='rows'>
+            <div className="DrawSection">
+              <Doodle brushSize={brushSize} brushColor={brushColor} />
+              <br></br>
+              <Color brushColor={brushColor} setVar={setColor} />
+            </div>
+            <UI className="circles" brushSize={brushSize} setVar={setVar} />
           </div>
-          <UI className="circles" brushSize={brushSize} setVar={setVar} />
 
 
           {/* <br/> */}

@@ -17,7 +17,11 @@ import Switch from '@mui/material/Switch';
 import Chart from 'chart.js/auto';
 import { Bar } from "react-chartjs-2";
 
-
+var bMobile =   // will be true if running on a mobile device
+  navigator.userAgent.indexOf( "Mobile" ) !== -1 || 
+  navigator.userAgent.indexOf( "iPhone" ) !== -1 || 
+  navigator.userAgent.indexOf( "Android" ) !== -1 || 
+  navigator.userAgent.indexOf( "Windows Phone" ) !== -1 ;
 
 // import test from "./envelope.png"
 
@@ -540,7 +544,7 @@ export default function Doodle(props) {
   }, [props.brushColor]);
   return (
     <div className="canvas" id="canv">
-      <CanvasDraw brushColor={props.brushColor} ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)", width: "600px", height: "600px" }} />
+      <CanvasDraw className="canvas-real" brushColor={props.brushColor} ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)", width: "600px", height: "600px" }} />
 
       <div>
         <Button variant="contained" color="primary" onClick={clearCanvas}>Clear</Button>
@@ -553,9 +557,9 @@ export default function Doodle(props) {
         {/* <button className="bg-purple-600" onClick={getImageData}>Click</button> */}
         <Button variant="contained" color="primary" onClick={getImageData}>Submit</Button>
       </div>
-      <br />
+      {/* <br /> */}
 
-      <div>
+      <div className="rows-real">
         <TextField id="outlined-basic" label="Override Prompt" variant="outlined" disabled={!isOverriding} value={newPromptWord} onChange={onChangeInput} />
         <Switch label="Override Prediction" onChange={(e) => {
           setIsOverriding(e.target.checked)
