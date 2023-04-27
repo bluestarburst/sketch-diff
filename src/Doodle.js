@@ -84,7 +84,7 @@ export default function Doodle(props) {
   }, [])
 
   useEffect(() => {
-    document.title = "Team Name";
+    document.title = "Paintify";
   }, [imgUrl, greyScaleURL]);
 
 
