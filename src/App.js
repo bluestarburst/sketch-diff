@@ -41,6 +41,9 @@ function App() {
           <p>
           </p>
         </div>
+        <div id="TitleStuff">
+          <TitleMake />
+        </div>
       </header>
 
       <div className="encap">
@@ -54,7 +57,6 @@ function App() {
 
 
           <br></br>
-          <UI brushSize={brushSize} setVar={setVar} />
 
           <div className="Typed_Stuff">
             <TypeWrite1 />

@@ -80,7 +80,8 @@ animation-fill-mode:forwards;
 .alignment{
   display: flex;
   flex-direction: row;
-
+  justify-content: center;
+  /* align-items: center; */
 }
 .App-link {
   color: #61dafb;
@@ -115,8 +116,8 @@ animation-fill-mode:forwards;
   flex-direction: column;
   background-color: rgb(108, 29, 108);
   background-size:contain;
-  border-radius: 5%;
-  margin-left: 10%;
+  border-radius: 2rem;
+  /* margin-left: 10%; */
   width:700px;
   /* background-position: fixed; */
  
