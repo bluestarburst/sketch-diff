@@ -159,6 +159,3 @@ export default function Doodle(props) {
     </div>
   )
 }
-
-
-

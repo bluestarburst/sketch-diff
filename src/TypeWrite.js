@@ -6,7 +6,13 @@ import "./TypeWrite.css";
 export function TypeWrite1() {
  
     return (
+      
+    <div>
+      <div className="Directions">
+        <h2><u>Directions:</u></h2>
+      </div>
       <div className="Typed">
+
     <Typed
             strings={[
                 "Step 1: Choose the brush size you desire."
@@ -16,6 +22,8 @@ export function TypeWrite1() {
 />
       </div>
      
+    </div>
+      
     );
  }
 
