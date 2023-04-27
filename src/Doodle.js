@@ -145,10 +145,12 @@ export default function Doodle(props) {
     })
   }
 
-
+  useEffect(() => {
+    console.log("BRUSH COLOR",props.brushColor);
+  }, [props.brushColor]);
   return (
     <div className="canvas">
-      <CanvasDraw brushColor="#600" ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"}} />
+      <CanvasDraw brushColor={props.brushColor} ref={ref} brushRadius={props.brushSize} hideGrid style={{ boxShadow: "0 13px 27px -5px rgba(50, 50, 93, 0.25), 0 8px 16px -8px rgba(0, 0, 0, 0.3)"}} />
      <div className="canvas_buttons">
           <button className= "undo" onClick={undoCanvas}>Undo</button>
           <button className= "clear" onClick={clearCanvas}>Clear</button>

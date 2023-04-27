@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState } from "react";
 import { TwitterPicker} from 'react-color';
+import "./Color.css";
 
-
-export default function ColorPal() {
+function Color(props) {
+  function setColor(newColor) {
+    console.log(newColor)
+      props.setVar(newColor.hex)
+  }
        return(
-       <TwitterPicker/>
+       <TwitterPicker onChange={(color, event) => {setColor(color)}} />
+       
        );
 }
+
+export default Color;
