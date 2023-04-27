@@ -7,11 +7,12 @@ import UI from './UI';
 import React, { useState } from 'react';
 import { render } from 'react-dom';
 // import pen from './pen.png';
+// import ColorPal from './Color';
 import { TypeWrite1 } from './TypeWrite';
 import { TypeWrite2 } from './TypeWrite';
 import { TypeWrite3 } from './TypeWrite';
 import { TypeWrite4 } from './TypeWrite';
-import ColorPal from './Color';
+import Color from './Color';
 // import  Background from './Background';
 // import { useState } from 'react';`
 // import ColorPalette from './Color';
@@ -31,28 +32,27 @@ import { useEffect } from 'react';
 
 function App() {
   const [brushSize, setVar] = useState(1);
-
+  const [brushColor, setColor] = useState("#000");
   return (
     <div className="App">
-      
+
       <header className="App-header">
         <div className="backy">
           <p>
           </p>
-        </div>
-        <div id="TitleStuff">
-          <TitleMake />
         </div>
       </header>
 
       <div className="encap">
         <div className="alignment">
           <div className="DrawSection">
-            <Doodle brushSize={brushSize} />
+            <Doodle brushSize={brushSize} brushColor={brushColor} />
             <br></br>
-            <ColorPal />
+            <Color brushColor={brushColor} setVar={setColor} />
           </div>
-          
+          <UI className="circles" brushSize={brushSize} setVar={setVar} />
+
+
           <br></br>
           <UI brushSize={brushSize} setVar={setVar} />
 

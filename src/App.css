@@ -114,11 +114,12 @@ animation-fill-mode:forwards;
   display: flex;
   flex-direction: column;
   background-color: rgb(108, 29, 108);
-  background-size: cover;
-  border-radius: 2rem;
-  /* margin-left: 10%; */
-  background-position: fixed;
-  width:100%;
+  background-size:contain;
+  border-radius: 5%;
+  margin-left: 10%;
+  width:700px;
+  /* background-position: fixed; */
+ 
 
 }
 
@@ -131,4 +132,7 @@ animation-fill-mode:forwards;
   left: 25%;
   
   
+}
+.circles{
+  block-size: 10%;;
 }
