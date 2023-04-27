@@ -115,8 +115,8 @@ animation-fill-mode:forwards;
   flex-direction: column;
   background-color: rgb(108, 29, 108);
   background-size: cover;
-  border-radius: 5%;
-  margin-left: 10%;
+  border-radius: 2rem;
+  /* margin-left: 10%; */
   background-position: fixed;
   width:100%;
 

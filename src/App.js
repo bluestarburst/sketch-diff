@@ -6,14 +6,14 @@ import Title from './Title';
 import UI from './UI';
 import React, { useState } from 'react';
 import { render } from 'react-dom';
-import pen from './pen.png';
+// import pen from './pen.png';
 import { TypeWrite1 } from './TypeWrite';
 import { TypeWrite2 } from './TypeWrite';
 import { TypeWrite3 } from './TypeWrite';
 import { TypeWrite4 } from './TypeWrite';
 import ColorPal from './Color';
 // import  Background from './Background';
-import { useState } from 'react';
+// import { useState } from 'react';`
 // import ColorPalette from './Color';
 
 import './App.css'
@@ -22,6 +22,7 @@ import './Background.css'
 import './Title.css'
 import './Doodle.css'
 import './UI.css'
+import { useEffect } from 'react';
 
 
 // model code should go here probably!
@@ -30,9 +31,10 @@ import './UI.css'
 
 function App() {
   const [brushSize, setVar] = useState(1);
+
   return (
     <div className="App">
-      x
+      
       <header className="App-header">
         <div className="backy">
           <p>
@@ -50,8 +52,9 @@ function App() {
             <br></br>
             <ColorPal />
           </div>
-          <UI brushSize={brushSize} setVar={setVar} />
+          
           <br></br>
+          <UI brushSize={brushSize} setVar={setVar} />
 
           <div className="Typed_Stuff">
             <TypeWrite1 />
