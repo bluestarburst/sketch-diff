@@ -81,6 +81,7 @@ animation-fill-mode:forwards;
   display: flex;
   flex-direction: row;
   justify-content: center;
+  gap: 1rem;
   /* align-items: center; */
 }
 .App-link {
@@ -119,9 +120,8 @@ animation-fill-mode:forwards;
   border-radius: 2rem;
   /* margin-left: 10%; */
   width:700px;
+  max-width: 50% !important;
   /* background-position: fixed; */
- 
-
 }
 
 #TitleStuff{
