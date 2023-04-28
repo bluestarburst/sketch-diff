@@ -50,7 +50,7 @@ export function TypeWrite1() {
     <div className="Typed">
 <Typed
             strings={[
-                "Step 3: Click on the click button when done."
+                "Step 3: Click on the submit button when done."
             ]}
                
             typeSpeed = {200}
@@ -67,7 +67,7 @@ export function TypeWrite4() {
 
 <Typed
             strings={[
-                "Step 4: View your AI-generated painting!"
+                "Step 4: View your AI-generated painting! Override if necessary."
             ]}
                
             typeSpeed = {200}
