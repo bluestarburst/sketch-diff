@@ -19,8 +19,7 @@ export default function TitleMake() {
        <div className="sub">
         <Typed
             strings={[
-                "sketches", "insects", "houses", "faces", "animals", "stars", "food", "cars", "buildings", "rainbows", "the sun", "rain", "hearts", "skeletons","books",
-                "fashion", "nature", "cities"
+              "drums","the sun","anvils","baseball bats","eyeglasses","grapes","books","wheels","shovels","bread","tables","clouds","chairs","headphones","faces","eyes","airplanes","snakes","lollipops","power outlets","pants","mushrooms","stars","pillows","scissors","t-shirts","teeth","alarm clocks","paper clips","spoons","microphones","candles","pencils","envelopes","helmets","bridges","light bulbs","keys","donuts","birds","circles","beards","coffee cups","butterflies","benches","rifles","cats","socks","ice cream","moustaches","suitcases","hammers","rainbows","knives","cookies","baseballs"
             ]}
                
             typeSpeed = {100}
