@@ -31,7 +31,7 @@ import { useEffect } from 'react';
 // and other stuff too!
 
 function App() {
-  const [brushSize, setVar] = useState(1);
+  const [brushSize, setVar] = useState(14);
   const [brushColor, setColor] = useState("#000");
   return (
     <div className="App">
