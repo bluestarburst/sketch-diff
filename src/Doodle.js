@@ -18,10 +18,10 @@ import Chart from 'chart.js/auto';
 import { Bar } from "react-chartjs-2";
 
 var bMobile =   // will be true if running on a mobile device
-  navigator.userAgent.indexOf( "Mobile" ) !== -1 || 
-  navigator.userAgent.indexOf( "iPhone" ) !== -1 || 
-  navigator.userAgent.indexOf( "Android" ) !== -1 || 
-  navigator.userAgent.indexOf( "Windows Phone" ) !== -1 ;
+  navigator.userAgent.indexOf("Mobile") !== -1 ||
+  navigator.userAgent.indexOf("iPhone") !== -1 ||
+  navigator.userAgent.indexOf("Android") !== -1 ||
+  navigator.userAgent.indexOf("Windows Phone") !== -1;
 
 // import test from "./envelope.png"
 
@@ -39,10 +39,12 @@ export default function Doodle(props) {
   }
 
   const [diffusedImage, setDiffusedImage] = useState(null)
+  const [diffusedImage2, setDiffusedImage2] = useState(null)
 
   const [model, setModel] = useState(null)
 
   const [imgUrl, setImgURL] = useState("")
+  const [imgUrl2, setImgURL2] = useState("")
   const [greyScaleURL, setGreyScaleURL] = useState("")
   // const [classList, setClassList] = useState(classes.split(' ', 100))
   const [classList, setClassList] = useState(classes)
@@ -169,6 +171,10 @@ export default function Doodle(props) {
 
       ctx.drawImage(img, 0, 0, img.width, img.height)
 
+      const imgurl2 = await canvas.toDataURL("image/png")
+      console.log(imgurl2)
+      setImgURL2(imgurl2)
+
 
 
       const dpi = window.devicePixelRatio
@@ -215,13 +221,15 @@ export default function Doodle(props) {
       //loop through the pixels, turning the transparent ones white and the others black (0 or 255) 
       for (var i = 0; i < imgData.data.length; i += 4) {
         var avg = 255 - (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
-        imgData.data[i] = avg;
-        imgData.data[i + 1] = avg;
-        imgData.data[i + 2] = avg;
+        // imgData.data[i] = avg;
+        // imgData.data[i + 1] = avg;
+        // imgData.data[i + 2] = avg;
         if (avg != 0) {
-          imgData.data[i] = 255;
-          imgData.data[i + 1] = 255;
-          imgData.data[i + 2] = 255;
+          if (avg < 235) {
+            imgData.data[i] = 0;
+            imgData.data[i + 1] = 0;
+            imgData.data[i + 2] = 0;
+          }
           var x = (i / 4) % canvas.width
           var y = Math.floor((i / 4) / canvas.width)
           if (x < minX) {
@@ -245,13 +253,13 @@ export default function Doodle(props) {
 
       ctx.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height)
 
-      imgData = ctx.getImageData(minX * dpi, minY * dpi, (maxX - minX) * dpi, (maxY - minY) * dpi)
+      // imgData = ctx.getImageData(minX * dpi, minY * dpi, (maxX - minX) * dpi, (maxY - minY) * dpi)
 
       // document.body.appendChild(canvas)
 
       console.log(imgData)
 
-      preprocess(canvas, imgurl)
+      preprocess(canvas, imgurl, imgurl2)
 
       predictImage(canvas)
 
@@ -314,44 +322,16 @@ export default function Doodle(props) {
   const [newPrompt, setNewPrompt] = useState("best quality, extremely detailed, accurate")
   const [newNegativePrompt, setNewNegativePrompt] = useState("longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality")
 
-  function preprocess(imgData, imgurl) {
+  function preprocess(imgData, imgurl, imgurl2) {
     return tf.tidy(async () => {
-
-      const imgblob3 = imgurl.split(',')[1]
-
-      var request3 = {
-        "inputs": (tempPrompt + ", ghibli style"),
-        "image": imgblob3,
-        "negative_prompt": newNegativePrompt,
-      }
-
-
-      const responseDiffusion3 = await fetch("https://dw8hrfe3u0z4cghk.us-east-1.aws.endpoints.huggingface.cloud", {
-        method: "POST",
-        body: JSON.stringify(request),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "image/png",
-
-        }
-      })
-
-      // read image data from response
-      const data3 = await responseDiffusion3.blob()
-      setIsLoading(false);
-      console.log("RESULTs")
-      console.log(data2)
-
-      // convert image data to URL
-      const url3 = URL.createObjectURL(data3)
-      console.log(url3)
-      setDiffusedImage(url3)
-      return;
-
 
       //convert to a tensor
       // let tensor = tf.browser.fromPixels(imgData) 
       let tensor = tf.browser.fromPixels(imgData)
+
+      // delete canvas element
+      imgData.remove()
+
       // make all pixels of alpha 0 to 255
       // tensor = tensor.slice([0, 0, 0], [-1, -1, 3])
       // console.log(tensor)
@@ -451,7 +431,40 @@ export default function Doodle(props) {
         tempPrompt = newPromptWord
       }
 
-      const imgblob = imgurl.split(',')[1]
+      const imgblob = imgurl2.split(',')[1] // POTENTIAL FIX
+
+      // START TEST
+      
+      const imgblob3 = imgurl2.split(',')[1]
+
+      var request3 = {
+        "inputs": (tempPrompt + ", ghibli style, best quality, bright colors"),
+        "image": imgblob3,
+        "negative_prompt": newNegativePrompt,
+      }
+
+      const responseDiffusion3 = await fetch("https://dtl65q7r3afsqrlw.us-east-1.aws.endpoints.huggingface.cloud", {
+        method: "POST",
+        body: JSON.stringify(request3),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "image/png",
+
+        }
+      })
+
+      // read image data from response
+      const data3 = await responseDiffusion3.blob()
+      setIsLoading(false);
+      console.log("RESULTs")
+      console.log(data3)
+
+      // convert image data to URL
+      const url3 = URL.createObjectURL(data3)
+      console.log(url3)
+      setDiffusedImage2(url3)
+
+      // END TEST
 
       console.log("start")
 
@@ -626,6 +639,7 @@ export default function Doodle(props) {
         {isLoading ? <CircularProgress /> : null}
       </div>
 
+      {diffusedImage2 ? <img src={diffusedImage2} /> : null}
       {diffusedImage ? <img src={diffusedImage} /> : null}
 
       {/* {<Button variant="contained" size="small" color="secondary">test</Button>} */}

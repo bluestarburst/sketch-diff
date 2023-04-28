@@ -86,5 +86,5 @@ class EndpointHandler():
     def decode_base64_image(self, image_string):
         base64_image = base64.b64decode(image_string)
         buffer = BytesIO(base64_image)
-        image = Image.open(buffer).convert("RGB").thumbnail((768, 768))
+        image = Image.open(buffer)
         return image
