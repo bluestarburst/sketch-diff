@@ -7,8 +7,6 @@ import torch
 
 
 import numpy as np
-import cv2
-import controlnet_hinter
 
 # set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

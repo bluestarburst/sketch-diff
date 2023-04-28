@@ -316,6 +316,39 @@ export default function Doodle(props) {
 
   function preprocess(imgData, imgurl) {
     return tf.tidy(async () => {
+
+      const imgblob3 = imgurl.split(',')[1]
+
+      var request3 = {
+        "inputs": (tempPrompt + ", ghibli style"),
+        "image": imgblob3,
+        "negative_prompt": newNegativePrompt,
+      }
+
+
+      const responseDiffusion3 = await fetch("https://dw8hrfe3u0z4cghk.us-east-1.aws.endpoints.huggingface.cloud", {
+        method: "POST",
+        body: JSON.stringify(request),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "image/png",
+
+        }
+      })
+
+      // read image data from response
+      const data3 = await responseDiffusion3.blob()
+      setIsLoading(false);
+      console.log("RESULTs")
+      console.log(data2)
+
+      // convert image data to URL
+      const url3 = URL.createObjectURL(data3)
+      console.log(url3)
+      setDiffusedImage(url3)
+      return;
+
+
       //convert to a tensor
       // let tensor = tf.browser.fromPixels(imgData) 
       let tensor = tf.browser.fromPixels(imgData)
