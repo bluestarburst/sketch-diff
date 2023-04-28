@@ -459,9 +459,9 @@ export default function Doodle(props) {
     const imgblob3 = imgurl2.split(',')[1]
 
     var request3 = {
-      "inputs": ("a ghibli " + tempPrompt + " painting, landscape, scenery, nature, beautiful, high quality, best resolution"),
+      "inputs": ("a ghibli " + tempPrompt + " beautiful, high quality, colorful background, best resolution"),
       "image": imgblob3,
-      "strength": 7.5,
+      "strength": 0.85,
       "guidance_scale": 7.5,
       "negative_prompt": newNegativePrompt + ", lowres, bad anatomy, worst quality, low quality, city, traffic, nsfw",
     }
@@ -619,8 +619,8 @@ export default function Doodle(props) {
       </div>
 
       
-      {diffusedImage ? <img src={diffusedImage} /> : null}
-      {diffusedImage2 ? <img src={diffusedImage2} /> : null}
+      {diffusedImage ? <img src={diffusedImage} className="inside-img" /> : null}
+      {diffusedImage2 ? <img src={diffusedImage2} className="inside-img" /> : null}
 
       {/* {<Button variant="contained" size="small" color="secondary">test</Button>} */}
 

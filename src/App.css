@@ -140,6 +140,12 @@ animation-fill-mode:forwards;
   /* background-position: fixed; */
 }
 
+.inside-img {
+  position: relative;
+  width: 100%;
+  max-width: 90vw;
+}
+
 .Typed_Stuff h2 {
   font-size: 3rem;
   margin: 2rem 0;
@@ -180,6 +186,7 @@ animation-fill-mode:forwards;
 .canvas-real {
   width: 38vw !important;
   height: 38vw !important;
+  margin: auto;
 }
 
 
