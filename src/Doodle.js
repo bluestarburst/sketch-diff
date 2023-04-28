@@ -191,39 +191,12 @@ export default function Doodle(props) {
       console.log(imgData)
 
 
-
-
-      // for (var y = 0; y < canvas.height; y++) {
-      //   for (var x = 0; x < canvas.width; x++) {
-      //     var i = (y * 4) * canvas.width + x * 4;
-      //     var avg = 255 - (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
-
-      //     // imgData.data[i] = avg;
-      //     // imgData.data[i + 1] = avg;
-      //     // imgData.data[i + 2] = avg;
-      //     if (avg != 0) {
-      //       if (x < minX) {
-      //         minX = x
-      //       }
-      //       if (x > maxX) {
-      //         maxX = x
-      //       }
-      //       if (y < minY) {
-      //         minY = y
-      //       }
-      //       if (y > maxY) {
-      //         maxY = y
-      //       }
-      //     }
-      //   }
-      // }
-
       //loop through the pixels, turning the transparent ones white and the others black (0 or 255) 
       for (var i = 0; i < imgData.data.length; i += 4) {
         var avg = 255 - (imgData.data[i] + imgData.data[i + 1] + imgData.data[i + 2]) / 3;
-        // imgData.data[i] = avg;
-        // imgData.data[i + 1] = avg;
-        // imgData.data[i + 2] = avg;
+        imgData.data[i] = avg;
+        imgData.data[i + 1] = avg;
+        imgData.data[i + 2] = avg;
         if (avg != 0) {
           if (avg < 235) {
             imgData.data[i] = 0;
@@ -434,35 +407,8 @@ export default function Doodle(props) {
       const imgblob = imgurl2.split(',')[1] // POTENTIAL FIX
 
       // START TEST
-      
-      const imgblob3 = imgurl2.split(',')[1]
 
-      var request3 = {
-        "inputs": (tempPrompt + ", ghibli style, best quality, bright colors"),
-        "image": imgblob3,
-        "negative_prompt": newNegativePrompt,
-      }
-
-      const responseDiffusion3 = await fetch("https://dtl65q7r3afsqrlw.us-east-1.aws.endpoints.huggingface.cloud", {
-        method: "POST",
-        body: JSON.stringify(request3),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "image/png",
-
-        }
-      })
-
-      // read image data from response
-      const data3 = await responseDiffusion3.blob()
-      setIsLoading(false);
-      console.log("RESULTs")
-      console.log(data3)
-
-      // convert image data to URL
-      const url3 = URL.createObjectURL(data3)
-      console.log(url3)
-      setDiffusedImage2(url3)
+      asyncGhibli(tempPrompt, imgurl2)
 
       // END TEST
 
@@ -507,6 +453,37 @@ export default function Doodle(props) {
 
   function onChangeInput(e) {
     setNewPromptWord(e.target.value);
+  }
+
+  async function asyncGhibli(tempPrompt, imgurl2) {
+    const imgblob3 = imgurl2.split(',')[1]
+
+    var request3 = {
+      "inputs": ("a ghibli " + tempPrompt + " painting, landscape, scenery, nature, beautiful, pretty, gorgeous, lovely, stunning, breathtaking, amazing, wonderful, fantastic, incredible, awesome, cool, nice, good, great, highres, high quality, best resolution"),
+      "image": imgblob3,
+      "negative_prompt": newNegativePrompt + ", lowres, bad anatomy, worst quality, low quality, city, traffic, nsfw",
+    }
+
+    const responseDiffusion3 = await fetch("https://dtl65q7r3afsqrlw.us-east-1.aws.endpoints.huggingface.cloud", {
+      method: "POST",
+      body: JSON.stringify(request3),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "image/png",
+
+      }
+    })
+
+    // read image data from response
+    const data3 = await responseDiffusion3.blob()
+    setIsLoading(false);
+    console.log("RESULTs")
+    console.log(data3)
+
+    // convert image data to URL
+    const url3 = URL.createObjectURL(data3)
+    console.log(url3)
+    setDiffusedImage2(url3)
   }
 
 
@@ -639,8 +616,9 @@ export default function Doodle(props) {
         {isLoading ? <CircularProgress /> : null}
       </div>
 
-      {diffusedImage2 ? <img src={diffusedImage2} /> : null}
+      
       {diffusedImage ? <img src={diffusedImage} /> : null}
+      {diffusedImage2 ? <img src={diffusedImage2} /> : null}
 
       {/* {<Button variant="contained" size="small" color="secondary">test</Button>} */}
 
