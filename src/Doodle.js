@@ -9,6 +9,7 @@ import * as tf from '@tensorflow/tfjs';
 import { classes } from "./classes";
 import { envelopeArr } from "./EnvelopeImgArray2";
 
+import Slider from '@mui/material/Slider';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField from '@mui/material/TextField';
@@ -53,6 +54,9 @@ export default function Doodle(props) {
   const [topPredictionValues, setTopPredictionValues] = useState([])
   const [topPredictionLabels, setTopPredictionLabels] = useState([])
   const [chartData, setChartData] = useState(undefined)
+
+  const [guidanceScale, setGuidanceScale] = useState(7.5)
+  const [strength, setStrength] = useState(0.85)
 
 
   async function loadModel() {
@@ -419,7 +423,7 @@ export default function Doodle(props) {
         "image": imgblob,
         "negative_prompt": newNegativePrompt,
         "controlnet_type": "scribble",
-        "guidance_scale": 25,
+        "guidance_scale": guidanceScale + 10,
         "num_inference_steps": 30,
       }
 
@@ -461,8 +465,8 @@ export default function Doodle(props) {
     var request3 = {
       "inputs": ("a ghibli " + tempPrompt + " beautiful, high quality, colorful background, best resolution"),
       "image": imgblob3,
-      "strength": 0.85,
-      "guidance_scale": 7.5,
+      "strength": strength,
+      "guidance_scale": guidanceScale,
       "negative_prompt": newNegativePrompt + ", lowres, bad anatomy, worst quality, low quality, city, traffic, nsfw",
     }
 
@@ -603,6 +607,19 @@ export default function Doodle(props) {
         }} />
       </div>
 
+      <div>
+        <p className="pt w-100">Strength (of prompt)</p>
+        <Slider aria-label="Strength" value={strength} min={0} max={1} step={0.05} onChange={(e) => {
+          setStrength(e.target.value)
+          console.log(strength)
+        }} />
+        <p className="pt w-100">Guidance Scale (of scribble)</p>
+        <Slider aria-label="Guidance" value={guidanceScale} min={0} max={20} step={0.5} onChange={(e) => {
+          setGuidanceScale(e.target.value)
+          console.log(guidanceScale)
+        }} />
+      </div>
+
       {predictedLabel !== "" && (
         <p style={{ color: "black" }}>{"Predicted: " + predictedLabel}</p>
       )}
@@ -618,7 +635,7 @@ export default function Doodle(props) {
         {isLoading ? <CircularProgress /> : null}
       </div>
 
-      
+
       {diffusedImage ? <img src={diffusedImage} className="inside-img" /> : null}
       {diffusedImage2 ? <img src={diffusedImage2} className="inside-img" /> : null}
 

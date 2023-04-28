@@ -189,6 +189,10 @@ animation-fill-mode:forwards;
   margin: auto;
 }
 
+.pt {
+  color: black;
+  width: 100%;
+}
 
 .circles{
   block-size: 10%;;
