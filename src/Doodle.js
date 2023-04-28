@@ -459,8 +459,10 @@ export default function Doodle(props) {
     const imgblob3 = imgurl2.split(',')[1]
 
     var request3 = {
-      "inputs": ("a ghibli " + tempPrompt + " painting, landscape, scenery, nature, beautiful, pretty, gorgeous, lovely, stunning, breathtaking, amazing, wonderful, fantastic, incredible, awesome, cool, nice, good, great, highres, high quality, best resolution"),
+      "inputs": ("a ghibli " + tempPrompt + " painting, landscape, scenery, nature, beautiful, high quality, best resolution"),
       "image": imgblob3,
+      "strength": 7.5,
+      "guidance_scale": 7.5,
       "negative_prompt": newNegativePrompt + ", lowres, bad anatomy, worst quality, low quality, city, traffic, nsfw",
     }
 
