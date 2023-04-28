@@ -597,11 +597,11 @@ export default function Doodle(props) {
       </div>
 
       <div className="gap">
-        <TextField id="outlined-basic" label="Override Prompt" variant="outlined" value={newPrompt} onChange={(e) => {
+        <TextField id="outlined-basic" label="Positive Prompt" variant="outlined" value={newPrompt} onChange={(e) => {
           setNewPrompt(e.target.value)
           console.log(newPrompt)
         }} />
-        <TextField id="outlined-basic" label="Override Prompt" variant="outlined" value={newNegativePrompt} onChange={(e) => {
+        <TextField id="outlined-basic" label="Negative Prompt" variant="outlined" value={newNegativePrompt} onChange={(e) => {
           setNewNegativePrompt(e.target.value)
           console.log(newNegativePrompt)
         }} />
